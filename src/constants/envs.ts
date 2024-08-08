@@ -1,0 +1,1 @@
+export const url_back = process.env.NEXT_PUBLIC_URL_BACK ?? ''
