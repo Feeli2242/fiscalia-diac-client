@@ -1,5 +1,6 @@
 'use client'
 
+import Dashboard from '@/components/dashboard'
 import Login from '@/components/forms/login'
 import { userStore } from '@/store/user.store'
 import { Button } from '@nextui-org/react'
@@ -35,5 +36,9 @@ export default function Home() {
 			</main>
 		)
 
-	return <></>
+	return (
+		<>
+			<Dashboard />
+		</>
+	)
 }

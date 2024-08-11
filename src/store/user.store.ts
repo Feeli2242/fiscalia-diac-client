@@ -3,9 +3,11 @@ import { User } from '@/interfaces/user'
 import { toast } from 'sonner'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { ticketStore } from './tickets.store'
 
 interface UserStore {
 	user: User | null
+	setUser: (user: User) => void
 	token: string
 	isLoadingStore: boolean
 	login: (email: string, password: string) => Promise<void>
@@ -18,6 +20,7 @@ export const userStore = create(
 			user: null,
 			token: '',
 			isLoadingStore: true,
+			setUser: (user) => set({ user }),
 			login: async (email, password) => {
 				try {
 					const res = await fetch(`${url_back}/auth/login`, {
@@ -27,23 +30,36 @@ export const userStore = create(
 						},
 						body: JSON.stringify({ email, password }),
 					})
-					const data = await res.json()
+					type Errors = {
+						error: {
+							message: string
+						}
+					}
+					const data: User | Errors = await res.json()
 					if (res.ok) {
+						const user = data as User
 						const token = res.headers.get('auth')
 						toast.success('Ingreso correcto')
 						set({
-							user: data,
+							user,
 							token: token ?? '',
 						})
+						if (user.tickets) {
+							ticketStore.getState().setTickets(user.tickets)
+						}
 					} else {
-						console.log(data.error)
-						toast.error(data.error.message)
+						const issue = data as Errors
+						toast.error(issue.error.message)
 					}
 				} catch (error) {
 					console.log(error)
+					toast.error('Error de conexión con backend')
 				}
 			},
-			logout: () => set({ user: null, token: '' }),
+			logout: () => {
+				set({ user: null, token: '' })
+				ticketStore.getState().setTickets([])
+			},
 			setLoading: (value: boolean) => set({ isLoadingStore: value }),
 		}),
 		{

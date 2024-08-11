@@ -1,10 +1,30 @@
 'use client'
+import { url_back } from '@/constants/envs'
 import { userStore } from '@/store/user.store'
 import { Button } from '@nextui-org/react'
+import { useEffect, useState } from 'react'
 
 export default function NavBar() {
-	const { user, logout } = userStore()
+	const { user, logout, token, isLoadingStore } = userStore()
+	const [isValidToken, setValidToken] = useState(false)
 
+	const checkToken = async (token: string) => {
+		const res = await fetch(`${url_back}/auth/verify`, {
+			headers: {
+				auth: token,
+			},
+		})
+		if (res.ok) {
+			setValidToken(true)
+		} else {
+			logout()
+		}
+	}
+	useEffect(() => {
+		if (!isLoadingStore) {
+			checkToken(token)
+		}
+	}, [isLoadingStore])
 	if (!user) return null
 	return (
 		<nav className="bg-white rounded-b-md shadow-lg py-6">
