@@ -11,7 +11,7 @@ export default function Home() {
 
 	if (!user)
 		return (
-			<main className="flex min-h-screen flex-col items-center justify-start p-24">
+			<main className="flex min-h-screen flex-col items-center justify-start py-24">
 				<h2 className="text-2xl font-semibold text-blue-900">
 					Bienvenido al portal DIAC 2.0
 				</h2>

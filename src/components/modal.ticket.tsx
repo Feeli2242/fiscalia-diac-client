@@ -27,9 +27,10 @@ export default function EditTicketTable({
 	isOpen: boolean
 	setOpen: Dispatch<SetStateAction<boolean>>
 }) {
+	type UpdateTicket = Omit<Ticket, 'creatorId'>
 	const [loading, setLoading] = useState(false)
-	const [form, setForm] = useState({
-		ticketId: ticket.id,
+	const [form, setForm] = useState<UpdateTicket>({
+		id: ticket.id,
 		title: ticket.title,
 		description: ticket.description,
 		status: ticket.status,
@@ -44,23 +45,23 @@ export default function EditTicketTable({
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify(form),
+				body: JSON.stringify({ ...form, ticketId: form.id }),
 			})
 			const data: Ticket = await res.json()
-			if (res.ok) {
-				toast.success('Actualizado exitosamente')
-				updateTicket(data)
-				setOpen(false)
-			}
+			if (!res.ok) throw new Error('No se pudo actualizar')
+			toast.success('Actualizado exitosamente')
+			updateTicket(data)
+			setOpen(false)
 		} catch (error) {
 			console.log(error)
+			toast.error('Hubo un problema al actualizar')
 		} finally {
 			setLoading(false)
 		}
 	}
 
 	const handleSelectChange = (key: SharedSelection) => {
-		const [status] = Array.from(key) as string[]
+		const [status] = Array.from(key) as Status[]
 		setForm({ ...form, status })
 	}
 

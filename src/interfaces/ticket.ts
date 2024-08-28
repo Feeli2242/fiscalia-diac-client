@@ -1,12 +1,12 @@
 import { Attachment } from './extras'
 import { User } from './user'
-
+export type Status = 'pendiente' | 'en_proceso' | 'cerrado'
 export interface Ticket {
 	id: number
 	title: string
 	description: string
-	status: string
-	creatorId: number
+	status: Status
+	creatorId: number | null
 	createdAt?: Date
 	updatedAt?: Date
 	creator?: User
@@ -25,7 +25,7 @@ export interface TicketAssignment {
 
 export interface TicketStatusHistory {
 	id: number
-	status: string
+	status: Status
 	ticketId: number
 	changedBy: number
 	createdAt?: Date
